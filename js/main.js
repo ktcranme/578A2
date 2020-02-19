@@ -56,16 +56,33 @@ d3.csv("10yearAUSOpenMatches.csv").then(function(data){
         playerStatArray.push({'player': key, 'stats': playerStats[key]})
     }
 
-
-
     var playerCircles = g.selectAll("circle")
         .data(playerStatArray, function(d){
             return d['player'];
         });
+    
+    //tooltip DIV
+    var div = d3.select("body").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
+    
     playerCircles.enter()
         .append("circle")
             .attr("cx", function(d){ return Math.random() * 1000 })
-            .attr("r", 5)
+            .attr("r", function(d) { return d.stats.wins.length; })
             .attr("fill", "grey")
             .attr("cy", function(d){ return Math.random() * 1000 })
+            .on("mouseover", function(d) {
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .9);		
+                div.html(`<p>${d.player} (${d.stats.wins.length}) <p>`)	
+                    .style("left", (d3.event.pageX) + "px")		
+                    .style("top", (d3.event.pageY - 28) + "px");	
+                })					
+            .on("mouseout", function(d) {		
+                div.transition()		
+                    .duration(500)		
+                    .style("opacity", 0);	
+            });
 });
