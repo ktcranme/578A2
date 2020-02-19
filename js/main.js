@@ -93,6 +93,7 @@ d3.csv("10yearAUSOpenMatches.csv").then(function (data) {
     var simulation = d3.forceSimulation()
         .force("x", d3.forceX(width / 2).strength(0.005))
         .force("y", d3.forceY(width / 2).strength(0.005))
+        .force("collide", d3.forceCollide(10))
     simulation.nodes(playerStatArray)
         .on('tick', ticked);
     function ticked() {
