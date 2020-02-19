@@ -53,6 +53,10 @@ d3.csv("10yearAUSOpenMatches.csv").then(function (data) {
         playerStatArray.push({ 'player': key, 'stats': playerStats[key] })
     }
 
+    var maxWins =  Math.max.apply(Math, playerStatArray.map(data => {return data.stats.wins ? data.stats.wins.length : 0 }));
+    var radiusScale = d3.scaleSqrt().domain([0,maxWins]).range([1,20]);
+    console.log(radiusScale);
+
     // var playerCircles = g.selectAll("circle")
     //     .data(playerStatArray, function (d) {
     //         return d['player'];
@@ -70,7 +74,7 @@ d3.csv("10yearAUSOpenMatches.csv").then(function (data) {
         // .attr("cx", function(d){ return Math.random() * 1000 })
         .attr("r", function (d) {
             // return 10;
-            return d.stats.wins.length;
+            return radiusScale(d.stats.wins.length);
         })
         .attr("fill", "grey")
         .attr("stroke", "black")
@@ -93,7 +97,8 @@ d3.csv("10yearAUSOpenMatches.csv").then(function (data) {
     var simulation = d3.forceSimulation()
         .force("x", d3.forceX(width / 2).strength(0.005))
         .force("y", d3.forceY(width / 2).strength(0.005))
-        .force("collide", d3.forceCollide(10))
+        .force("collide", d3.forceCollide(function(d){ return radiusScale(d.stats.wins.length); }))
+    
     simulation.nodes(playerStatArray)
         .on('tick', ticked);
     function ticked() {
